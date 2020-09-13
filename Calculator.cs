@@ -23,5 +23,12 @@ namespace Interest
                 .Select(c => GetInterestAmount(c))
                 .Sum();
         }
+        
+        public decimal GetInterestAmount(Person person)
+        {
+            return person.Wallets
+                .Select(w => GetInterestAmount(w))
+                .Sum();
+        }
     }
 }

@@ -7,7 +7,6 @@ namespace Interest
     public class CalculatorTests
     {
         Calculator testObject;
-
         Mock<IInterestRateSource> rateSource;
 
         [SetUp]
@@ -49,6 +48,38 @@ namespace Interest
             var result = testObject.GetInterestAmount(wallet);
 
             Assert.That(result, Is.EqualTo(10m));
+        }
+
+        [Test]
+        public void GetInterestAmount_ForPerson()
+        {
+            SetupInterestRate(CreditCardType.Visa, .1m);
+            SetupInterestRate(CreditCardType.MasterCard, .2m);
+            SetupInterestRate(CreditCardType.Discover, .3m);
+
+            var person = new Person
+            {
+                Wallets = new[]{
+                    new Wallet
+                    {
+                        Cards = new[] {
+                            new CreditCard{Type = CreditCardType.MasterCard, Balance = 1},
+                            new CreditCard{Type = CreditCardType.Discover, Balance = 2}
+                        }
+                    },
+                    new Wallet
+                    {
+                        Cards = new[] {
+                            new CreditCard{Type = CreditCardType.MasterCard, Balance = 3},
+                            new CreditCard{Type = CreditCardType.Visa, Balance = 4}
+                        }
+                    }
+                }
+            };
+
+            var result = testObject.GetInterestAmount(person);
+
+            Assert.That(result, Is.EqualTo(1.8m));
         }
 
         private void SetupInterestRate(CreditCardType type, decimal rate)
