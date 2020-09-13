@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Interest
 {
     public class Calculator
@@ -13,6 +15,13 @@ namespace Interest
         {
             var rate = rateSource.GetInterestRate(card.Type);
             return card.Balance * rate;
+        }
+
+        public decimal GetInterestAmount(Wallet wallet)
+        {
+            return wallet.Cards
+                .Select(c => GetInterestAmount(c))
+                .Sum();
         }
     }
 }

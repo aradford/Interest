@@ -18,10 +18,9 @@ namespace Interest
         }
 
         [Test]
-        public void GetInterestAmount_ForCard_ReturnsAmount()
+        public void GetInterestAmount_ForCard()
         {
-            rateSource.Setup(s => s.GetInterestRate(It.IsAny<CreditCardType>()))
-                .Returns(.2m);
+            SetupInterestRate(CreditCardType.MasterCard, .2m);
             var card = new CreditCard
             {
                 Type = CreditCardType.MasterCard,
@@ -31,7 +30,31 @@ namespace Interest
             var result = testObject.GetInterestAmount(card);
 
             Assert.That(result, Is.EqualTo(60.02m));
-            rateSource.Verify(s => s.GetInterestRate(CreditCardType.MasterCard));
+        }
+
+        [Test]
+        public void GetInterestAmount_ForWallet()
+        {
+            SetupInterestRate(CreditCardType.MasterCard, .05m);
+            SetupInterestRate(CreditCardType.Discover, .1m);
+
+            var wallet = new Wallet
+            {
+                Cards = new[] {
+                    new CreditCard{Type = CreditCardType.MasterCard, Balance = 50},
+                    new CreditCard{Type = CreditCardType.Discover, Balance = 75}
+                }
+            };
+
+            var result = testObject.GetInterestAmount(wallet);
+
+            Assert.That(result, Is.EqualTo(10m));
+        }
+
+        private void SetupInterestRate(CreditCardType type, decimal rate)
+        {
+            rateSource.Setup(s => s.GetInterestRate(type))
+                            .Returns(rate);
         }
     }
 }
