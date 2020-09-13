@@ -15,9 +15,9 @@ namespace Interest
                 case CreditCardType.Discover:
                     return .01m;
                 case CreditCardType.MasterCard:
-                    return .01m;
+                    return .05m;
                 case CreditCardType.Visa:
-                    return .01m;
+                    return .1m;
                 default:
                     throw new Exception("Unknown credit card type");
             }
